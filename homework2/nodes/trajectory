@@ -1,0 +1,31 @@
+'''
+Publishes a cmd_vel (geometry_msgs/Twist) message at a fixed frequency, causing the turtlebot to follow the desired open-loop trajectory
+It is up to you to find an appropriate frequency, but 10 Hz is too slow and 1 kHz is faster than needed.
+
+Broadcasts:
+A static transform from world to odom.
+The world frame and odom frame are co-located. When the turtlebot is at (0, 0, 0) in the odom frame it is at 0,0,θ0 in the world frame, where θ0 is the initial angle of the robot on its figure-eight trajectory
+Thus, when the turtlebot starts, it can initiate its odometry to (0,0,0) but always be facing the correct direction in the odometry frame
+
+Services:
+pause (type up to you) Stop the turtle's motion, in a way that the trajectory can be resumed
+resume (type up to you) Resume the turtle's motion along the trajectory
+
+Parameters:
+width: The width of the figure eight
+height: The height of the figure eight
+period: The amount of time it takes to complete the figure eight
+~pub_freq: The frequency at which to publish the messages. This is a private parameter.
+Pick parameters that fit your location and the turtlebot's capabilities.
+
+Idea: Two classes (import homework2 python package)
+FigureEight is responsible for all calculations related to FigureEight trajectories:
+It should be able to provide the trajectory coordinates and derivatives at any given time for a set of parameters.
+
+Kinematics is responsible for the calculations related to the kinematics of the turltebot
+This class can use FigureEight to compute the appropriate control inputs to follow the trajectory
+
+In general, multiple trajectory shapes could be supported by substituting FigureEight with another class for a different trajectory
+You need not support multiple trajectory shapes, but this may be a helpful way of thinking about how to organize the code.
+'''
+
