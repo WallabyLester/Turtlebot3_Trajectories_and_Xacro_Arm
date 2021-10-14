@@ -36,11 +36,11 @@ from std_srvs.srv import Empty
 from geometry_msgs.msg import Twist, Vector3
 import math
 
-values = rospy.get_param("/figure_eight")
-width = values[0]
-height = values[1]
-period = values[2]
-__pub_freq = rospy.get_param("~pub_freq")
+#values = rospy.get_param("/figure_eight")
+#width = values[0]
+#height = values[1]
+#period = values[2]
+#__pub_freq = rospy.get_param("~pub_freq")
 
 
 class FigureEight:
@@ -51,15 +51,16 @@ class FigureEight:
         self.__pause = rospy.Service("pause", Empty, self.stop)
         self.__resume = rospy.Service("resume", Empty, self.move)
         self.pub = rospy.Publisher("turtle1/cmd_vel", Twist, queue_size=10)
-
+        self.flag = 0  # use for time
 
     def stop(self):
-        rospy.wait_for_service("pause")
+        #rospy.wait_for_service("pause")
         stop = rospy.Publisher("turtle1/cmd_vel", Twist, queue_size=10)
         stop.publish(Twist(Vector3(x=0, y=0, z=0), Vector3(x=0, y=0, z=0)))
-        self.__pause.spin()
+        #self.__pause.spin()
 
     def move(self):
+        #rospy.wait_for_service("resume")
         self.pathing()
 
 
@@ -67,11 +68,11 @@ class FigureEight:
         self.pub.publish(Twist(Vector3(x=1, y=0, z=0), Vector3(x=0, y=0, z=0)))
 
 
-
 if __name__=='__main__':
-    rate = rospy.Rate(__pub_freq)
     rospy.init_node("trajectory", log_level=rospy.DEBUG)
+    node = FigureEight()
+    rate = rospy.Rate(20) #__pub_freq
 
     while not rospy.is_shutdown():
-        FigureEight.pathing()
+        node.pathing()
         rate.sleep()
