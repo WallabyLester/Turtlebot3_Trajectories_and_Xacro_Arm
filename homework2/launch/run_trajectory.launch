@@ -1,7 +1,7 @@
 <launch>
     <node name="andru" pkg="turtlesim" type="turtlesim_node"/>
     <node name="trajectory" pkg="homework2" type="trajectory">
-        <param name="pub_freq" value="20"/>
+        <param name="pub_freq" type="double" value="20.0"/>
     </node>
 
 </launch>

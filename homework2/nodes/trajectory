@@ -32,7 +32,7 @@ You need not support multiple trajectory shapes, but this may be a helpful way o
 '''
 
 import rospy
-from std_srvs.srv import Empty
+from std_srvs.srv import Empty, EmptyResponse
 from geometry_msgs.msg import Twist, Vector3
 import math
 
@@ -51,21 +51,23 @@ class FigureEight:
         self.__pause = rospy.Service("pause", Empty, self.stop)
         self.__resume = rospy.Service("resume", Empty, self.move)
         self.pub = rospy.Publisher("turtle1/cmd_vel", Twist, queue_size=10)
+        self.__pub_freq = rospy.get_param("~pub_freq")
         self.flag = 0  # use for time
 
-    def stop(self):
+    def stop(self, event=None):
         #rospy.wait_for_service("pause")
         stop = rospy.Publisher("turtle1/cmd_vel", Twist, queue_size=10)
         stop.publish(Twist(Vector3(x=0, y=0, z=0), Vector3(x=0, y=0, z=0)))
         #self.__pause.spin()
 
-    def move(self):
+    def move(self, event=None):
         #rospy.wait_for_service("resume")
-        self.pathing()
+        self.flag = 1
 
-
-    def pathing(self):
-        self.pub.publish(Twist(Vector3(x=1, y=0, z=0), Vector3(x=0, y=0, z=0)))
+    def pathing(self, event=None):
+        if self.flag == 1:
+            movement = Twist(Vector3(x=1, y=0, z=0), Vector3(x=0, y=0, z=0))
+            self.pub.publish(movement)
 
 
 if __name__=='__main__':
@@ -73,6 +75,9 @@ if __name__=='__main__':
     node = FigureEight()
     rate = rospy.Rate(20) #__pub_freq
 
-    while not rospy.is_shutdown():
-        node.pathing()
-        rate.sleep()
+    rospy.Timer(rospy.Duration(1.0/20.0), node.pathing)
+    rospy.spin()
+
+    #while not rospy.is_shutdown():
+        #node.pathing()
+        #rate.sleep()
