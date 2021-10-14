@@ -29,3 +29,48 @@ In general, multiple trajectory shapes could be supported by substituting Figure
 You need not support multiple trajectory shapes, but this may be a helpful way of thinking about how to organize the code.
 '''
 
+import rospy
+from std_srvs.srv import Empty
+from geometry_msgs.msg import Twist, Vector3
+import math
+
+trajectory = rospy.get_param("/trajectory")
+values = rospy.get_param("/figure_eight")
+width = values[0]
+height = values[1]
+period = values[2]
+__pub_freq = rospy.get_param("~pub_freq")
+
+
+class FigureEight:
+    """ Calculates based on Figure Eight trajectories and provides coordinates 
+    """
+    def __init__(self):
+        # temporary service type
+        self.__pause = rospy.Service("pause", Empty, self.stop)
+        self.__resume = rospy.Service("resume", Empty, self.move)
+        self.pub = rospy.Publisher("turtle1/cmd_vel", Twist, queue_size=10)
+
+
+    def stop(self):
+        rospy.wait_for_service("pause")
+        stop = rospy.Publisher("turtle1/cmd_vel", Twist, queue_size=10)
+        stop.publish(Twist(Vector3(x=0, y=0, z=0), Vector3(x=0, y=0, z=0)))
+        self.__pause.spin()
+
+    def move(self):
+        self.pathing()
+
+
+    def pathing(self):
+        self.pub.publish(Twist(Vector3(x=something, y=something, z=something), Vector3(x=something, y=something, z=something)))
+
+
+
+if __name__=='__main__':
+    rate = rospy.Rate(__pub_freq)
+    rospy.init_node("trajectory", log_level=rospy.DEBUG)
+
+    while not rospy.is_shutdown():
+        FigureEight.pathing()
+        rate.sleep()
