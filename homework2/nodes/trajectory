@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 '''
 Publishes a cmd_vel (geometry_msgs/Twist) message at a fixed frequency, causing the turtlebot to follow the desired open-loop trajectory
 It is up to you to find an appropriate frequency, but 10 Hz is too slow and 1 kHz is faster than needed.
@@ -34,7 +36,6 @@ from std_srvs.srv import Empty
 from geometry_msgs.msg import Twist, Vector3
 import math
 
-trajectory = rospy.get_param("/trajectory")
 values = rospy.get_param("/figure_eight")
 width = values[0]
 height = values[1]
@@ -63,7 +64,7 @@ class FigureEight:
 
 
     def pathing(self):
-        self.pub.publish(Twist(Vector3(x=something, y=something, z=something), Vector3(x=something, y=something, z=something)))
+        self.pub.publish(Twist(Vector3(x=1, y=0, z=0), Vector3(x=0, y=0, z=0)))
 
 
 

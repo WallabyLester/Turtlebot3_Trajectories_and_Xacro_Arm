@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0.2)
-project(homework2_figure_eight)
+project(andru)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 # add_compile_options(-std=c++11)
@@ -53,11 +53,10 @@ turtlesim
 # )
 
 ## Generate services in the 'srv' folder
- add_service_files(
-   FILES
-   Pause.srv
-   Resume.srv
- )
+ #add_service_files(
+ #  FILES
+ 
+ #)
 
 ## Generate actions in the 'action' folder
 # add_action_files(
@@ -160,7 +159,7 @@ include_directories(
 ## in contrast to setup.py, you can choose the destination
 catkin_install_python(PROGRAMS
    nodes/trajectory
-   nodes/simodom
+   #nodes/simodom
    DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
  )
 
