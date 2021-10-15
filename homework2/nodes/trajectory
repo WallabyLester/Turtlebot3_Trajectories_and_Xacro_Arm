@@ -35,11 +35,12 @@ import rospy
 from std_srvs.srv import Empty, EmptyResponse
 from geometry_msgs.msg import Twist, Vector3
 import math
+from homework2.comp_traj import FigureEight
 
 #values = rospy.get_param("/figure_eight")
-#width = values[0]
-#height = values[1]
-#period = values[2]
+W = 5
+H = 5
+T = 5
 #__pub_freq = rospy.get_param("~pub_freq")
 
 
@@ -51,14 +52,19 @@ class Trajectory:
         self.__pause = rospy.Service("pause", Empty, self.stop)
         self.__resume = rospy.Service("resume", Empty, self.move)
         self.pub = rospy.Publisher("turtle1/cmd_vel", Twist, queue_size=10)
-        self.__pub_freq = rospy.get_param("~pub_freq")
+        #self.__pub_freq = rospy.get_param("~pub_freq")
+        self.__pub_freq = 400
+        self.figure_eight = FigureEight(W, H, T)
         self.flag = 0  # use for time
+        self.__t = rospy.get_time()
+        
 
     def stop(self, event=None):
-        #rospy.wait_for_service("pause")
-        stop = rospy.Publisher("turtle1/cmd_vel", Twist, queue_size=10)
-        stop.publish(Twist(Vector3(x=0, y=0, z=0), Vector3(x=0, y=0, z=0)))
-        #self.__pause.spin()
+        if self.flag == 1:
+            #rospy.wait_for_service("pause")
+            stop = rospy.Publisher("turtle1/cmd_vel", Twist, queue_size=10)
+            stop.publish(Twist(Vector3(x=0, y=0, z=0), Vector3(x=0, y=0, z=0)))
+            #self.__pause.spin()
 
     def move(self, event=None):
         #rospy.wait_for_service("resume")
@@ -66,18 +72,21 @@ class Trajectory:
 
     def pathing(self, event=None):
         if self.flag == 1:
-            movement = Twist(Vector3(x=1, y=0, z=0), Vector3(x=0, y=0, z=0))
+            print(self.__t)
+            x, y, v, w = self.figure_eight.get_velocity(self.__t)
+            movement = Twist(Vector3(x=v, y=0, z=0), Vector3(x=0, y=0, z=w))
+            print(movement)
             self.pub.publish(movement)
 
 
 if __name__=='__main__':
     rospy.init_node("trajectory", log_level=rospy.DEBUG)
     node = Trajectory()
-    rate = rospy.Rate(20) #__pub_freq
+    rate = rospy.Rate(70) #__pub_freq
 
-    rospy.Timer(rospy.Duration(1.0/20.0), node.pathing)
-    rospy.spin()
-
-    #while not rospy.is_shutdown():
-        #node.pathing()
-        #rate.sleep()
+    #rospy.Timer(rospy.Duration(1.0/70.0), node.pathing)
+    #rospy.spin()
+    
+    while not rospy.is_shutdown():
+        node.pathing()
+        rate.sleep()
