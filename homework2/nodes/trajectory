@@ -39,6 +39,7 @@ from homework2.comp_traj import FigureEight
 import tf2_ros
 from nav_msgs.msg import Odometry
 from tf_conversions import transformations
+from numpy import sin, pi, cos
 
 #values = rospy.get_param("/figure_eight")
 W = 5
@@ -51,56 +52,60 @@ class Trajectory:
     """ Calculates based on Figure Eight trajectories and provides coordinates 
     """
     def __init__(self):
-        self.__pause = rospy.Service("pause", Empty, self.stop) # temporary service type
+        self.__pause = rospy.Service("pause", Empty, self.pause) # temporary service type
         self.__resume = rospy.Service("resume", Empty, self.resume)
         self.pub = rospy.Publisher("turtle1/cmd_vel", Twist, queue_size=10)
         self.__pub_freq = rospy.get_param("~pub_freq")
         self.rate = self.__pub_freq
         self.figure_eight = FigureEight(W, H, T)
-        self.flag = 0  # use for time
+        self.flag = False  # use for time
         self.__t = rospy.get_time()
+        self.t_paused = 0
+        self.t_diff = 0
+        #self.theta = 
 
-        self.broadcaster = tf2_ros.TransformBroadcaster()
+        # self.broadcaster = tf2_ros.StaticTransformBroadcaster()
 
-        self.dx = 10
-        self.degrees = 36 * self.dx
-        self.radians = self.degrees * math.pi/180
-        q1 = transformations.quaternion_about_axis(self.radians, [0,0,1]) # with theta0
+        # self.dx = 10
+        # self.degrees = 36 * self.dx
+        # self.radians = self.degrees * math.pi/180
+        # q1 = transformations.quaternion_from_euler(0, 0 , self.theta)
 
-        static_broadcaster = TransformStamped()
-        static_broadcaster.header.stamp = rospy.Time.now()
-        static_broadcaster.header.frame_id = "world"
-        static_broadcaster.child_frame_id = "odom"
+        # static_broadcaster = TransformStamped()
+        # static_broadcaster.header.stamp = rospy.Time.now()
+        # static_broadcaster.header.frame_id = "world"
+        # static_broadcaster.child_frame_id = "odom"
 
-        static_broadcaster.transform.translation.x = 0
-        static_broadcaster.transform.translation.y = 0
-        static_broadcaster.transform.translation.z = 0
+        # static_broadcaster.transform.translation.x = 0
+        # static_broadcaster.transform.translation.y = 0
+        # static_broadcaster.transform.translation.z = 0
 
-        static_broadcaster.transform.rotation.x = q1[0]
-        static_broadcaster.transform.rotation.y = q1[1]
-        static_broadcaster.transform.rotation.z = q1[2]
-        static_broadcaster.transform.rotation.w = q1[3]
+        # static_broadcaster.transform.rotation.x = q1[0]
+        # static_broadcaster.transform.rotation.y = q1[1]
+        # static_broadcaster.transform.rotation.z = q1[2]
+        # static_broadcaster.transform.rotation.w = q1[3]
         
-        self.broadcaster.sendTransform(static_broadcaster)
+        # self.broadcaster.sendTransform(static_broadcaster)
 
-    def stop(self, event=None):
-        if self.flag == 1:
-            #rospy.wait_for_service("pause")
+    def pause(self, event=None):
+        self.flag == False
+        if self.flag == False:
             stop = rospy.Publisher("turtle1/cmd_vel", Twist, queue_size=10)
             stop.publish(Twist(Vector3(x=0, y=0, z=0), Vector3(x=0, y=0, z=0)))
-            #self.__pause.spin()
+            self.t_paused = rospy.get_time()
 
     def resume(self, event=None):
-        #rospy.wait_for_service("resume")
-        self.flag = 1
-    
+        self.flag = True
+        self.t_diff += rospy.get_time() - self.t_paused
+        self.pathing()
+
     def pathing(self, event=None):
-        if self.flag == 0:
+        if self.flag == True:
             while not rospy.is_shutdown():
-                t = rospy.get_time() - self.__t
-                print(t)
+                t = rospy.get_time() - self.__t - self.t_diff
+                #print(t)
                 x, y, v, w = self.figure_eight.get_velocity(t)
-                #print(f"x =  {v}")
+                #print(f"x =  {v}") 
                 movement = Twist(Vector3(x=v, y=0, z=0), Vector3(x=0, y=0, z=w))
                 print(f"v and w = {movement}")
                 self.pub.publish(movement)
