@@ -33,9 +33,12 @@ You need not support multiple trajectory shapes, but this may be a helpful way o
 
 import rospy
 from std_srvs.srv import Empty, EmptyResponse
-from geometry_msgs.msg import Twist, Vector3
+from geometry_msgs.msg import Twist, Vector3, Quaternion, TransformStamped
 import math
 from homework2.comp_traj import FigureEight
+import tf2_ros
+from nav_msgs.msg import Odometry
+from tf_conversions import transformations
 
 #values = rospy.get_param("/figure_eight")
 W = 5
@@ -48,16 +51,37 @@ class Trajectory:
     """ Calculates based on Figure Eight trajectories and provides coordinates 
     """
     def __init__(self):
-        # temporary service type
-        self.__pause = rospy.Service("pause", Empty, self.stop)
-        self.__resume = rospy.Service("resume", Empty, self.move)
+        self.__pause = rospy.Service("pause", Empty, self.stop) # temporary service type
+        self.__resume = rospy.Service("resume", Empty, self.resume)
         self.pub = rospy.Publisher("turtle1/cmd_vel", Twist, queue_size=10)
-        #self.__pub_freq = rospy.get_param("~pub_freq")
-        self.__pub_freq = 400
+        self.__pub_freq = rospy.get_param("~pub_freq")
+        self.rate = self.__pub_freq
         self.figure_eight = FigureEight(W, H, T)
         self.flag = 0  # use for time
         self.__t = rospy.get_time()
+
+        self.broadcaster = tf2_ros.TransformBroadcaster()
+
+        self.dx = 10
+        self.degrees = 36 * self.dx
+        self.radians = self.degrees * math.pi/180
+        q1 = transformations.quaternion_about_axis(self.radians, [0,0,1]) # with theta0
+
+        static_broadcaster = TransformStamped()
+        static_broadcaster.header.stamp = rospy.Time.now()
+        static_broadcaster.header.frame_id = "world"
+        static_broadcaster.child_frame_id = "odom"
+
+        static_broadcaster.transform.translation.x = 0
+        static_broadcaster.transform.translation.y = 0
+        static_broadcaster.transform.translation.z = 0
+
+        static_broadcaster.transform.rotation.x = q1[0]
+        static_broadcaster.transform.rotation.y = q1[1]
+        static_broadcaster.transform.rotation.z = q1[2]
+        static_broadcaster.transform.rotation.w = q1[3]
         
+        self.broadcaster.sendTransform(static_broadcaster)
 
     def stop(self, event=None):
         if self.flag == 1:
@@ -66,27 +90,28 @@ class Trajectory:
             stop.publish(Twist(Vector3(x=0, y=0, z=0), Vector3(x=0, y=0, z=0)))
             #self.__pause.spin()
 
-    def move(self, event=None):
+    def resume(self, event=None):
         #rospy.wait_for_service("resume")
         self.flag = 1
-
+    
     def pathing(self, event=None):
-        if self.flag == 1:
-            print(self.__t)
-            x, y, v, w = self.figure_eight.get_velocity(self.__t)
-            movement = Twist(Vector3(x=v, y=0, z=0), Vector3(x=0, y=0, z=w))
-            print(movement)
-            self.pub.publish(movement)
-
+        if self.flag == 0:
+            while not rospy.is_shutdown():
+                t = rospy.get_time() - self.__t
+                print(t)
+                x, y, v, w = self.figure_eight.get_velocity(t)
+                #print(f"x =  {v}")
+                movement = Twist(Vector3(x=v, y=0, z=0), Vector3(x=0, y=0, z=w))
+                print(f"v and w = {movement}")
+                self.pub.publish(movement)
+                    
 
 if __name__=='__main__':
     rospy.init_node("trajectory", log_level=rospy.DEBUG)
     node = Trajectory()
-    rate = rospy.Rate(70) #__pub_freq
-
+    #rate = rospy.Rate(70) #__pub_freq
+    node.pathing()
+    rospy.spin()
+    
     #rospy.Timer(rospy.Duration(1.0/70.0), node.pathing)
     #rospy.spin()
-    
-    while not rospy.is_shutdown():
-        node.pathing()
-        rate.sleep()
