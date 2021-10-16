@@ -40,13 +40,6 @@ import tf2_ros
 from tf_conversions import transformations
 from numpy import sin, pi, cos
 
-#values = rospy.get_param("/figure_eight")
-# W = 4
-# H = 4
-# T = 7
-#__pub_freq = rospy.get_param("~pub_freq")
-#__pub_freq = 70
-
 
 class Trajectory:
     """ Calculates based on Figure Eight trajectories and provides coordinates 

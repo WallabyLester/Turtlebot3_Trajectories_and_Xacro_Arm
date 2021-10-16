@@ -76,12 +76,34 @@ class FigureEight():
 
         return theta
 
+    def test(self, t):
+        """
+        Function for testing the python package calculations
+        """
+        x = self.x.subs(self.t, t)
+        y = self.y.subs(self.t, t)
+        xdot = self.xdot.subs(self.t, t)
+        ydot = self.ydot.subs(self.t, t)
+        xddot = self.xddot.subs(self.t, t)
+        yddot = self.yddot.subs(self.t, t)
+        v = self.v.subs(self.t, t)
+        omega = self.omega.subs(self.t, t)
+
+        return x, y, xdot, ydot, xddot, yddot, v, omega
+
+# for debugging
 '''
-#comp_traj(5, 5, 5) # for debugging
 figure_eight = FigureEight(5,5,5)
 #for t in range(10):
 t = 10
 x,y,v,w = figure_eight.get_velocity(t)
 print(f"v = {v}")
 print(f"w= {w}")
+'''
+# for finding test cases 
+'''
+figure_eight = FigureEight(4,2,6)
+t = 3
+x, y, xdot, ydot, xddot, yddot, v, omega = figure_eight.test(t)
+print(f"{x}, {y}, {xdot}, {ydot}, {xddot}, {yddot}, {v}, {omega}")
 '''
