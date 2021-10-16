@@ -19,16 +19,6 @@ height: The height of the figure eight
 period: The amount of time it takes to complete the figure eight
 ~pub_freq: The frequency at which to publish the messages. This is a private parameter.
 Pick parameters that fit your location and the turtlebot's capabilities.
-
-Idea: Two classes (import homework2 python package)
-FigureEight is responsible for all calculations related to FigureEight trajectories:
-It should be able to provide the trajectory coordinates and derivatives at any given time for a set of parameters.
-
-Kinematics is responsible for the calculations related to the kinematics of the turltebot
-This class can use FigureEight to compute the appropriate control inputs to follow the trajectory
-
-In general, multiple trajectory shapes could be supported by substituting FigureEight with another class for a different trajectory
-You need not support multiple trajectory shapes, but this may be a helpful way of thinking about how to organize the code.
 '''
 
 import rospy
@@ -83,15 +73,15 @@ class Trajectory:
 
     def pause(self, event=None):
         self.flag = False
-        self.stop.publish(Twist(Vector3(x=0, y=0, z=0), Vector3(x=0, y=0, z=0)))
-        self.rate.sleep
+        #self.stop.publish(Twist(Vector3(x=0, y=0, z=0), Vector3(x=0, y=0, z=0)))
+        #self.rate.sleep
         self.t_paused = rospy.get_time()
-        #return EmptyResponse()
+        return EmptyResponse()
 
     def resume(self, event=None):
         self.flag = True
         self.t_diff += rospy.get_time() - self.t_paused
-        self.pathing()
+        #self.pathing()
         return EmptyResponse()
 
     def pathing(self, event=None):    
@@ -102,14 +92,15 @@ class Trajectory:
         movement = Twist(Vector3(x=v, y=0, z=0), Vector3(x=0, y=0, z=w))
         #print(f"v and w = {movement}")
         self.pub.publish(movement)
-        self.rate.sleep()
-                    
+        #self.rate.sleep()
+    
     def move(self):
         while not rospy.is_shutdown():
             if self.flag == True:
                 self.pathing()
             else:
-                self.rate.sleep()
+                self.pub.publish(Twist(Vector3(x=0,y=0,z=0), Vector3(x=0,y=0,z=0)))
+            self.rate.sleep()
 
 if __name__=='__main__':
     rospy.init_node("trajectory", log_level=rospy.DEBUG)

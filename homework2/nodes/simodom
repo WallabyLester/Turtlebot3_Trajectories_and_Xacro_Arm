@@ -14,11 +14,13 @@ from nav_msgs.msg import Odometry
 import tf2_ros
 from tf_conversions import transformations
 from geometry_msgs.msg import TransformStamped, Twist, Vector3
+from sensor_msgs.msg import JointState
 
 class Simodom():
     def __init__(self):
         rospy.Subscriber("turtle1/pose", Pose, self.broadcast_odom)
-        self.pub = rospy.Publisher('/odom', Odometry, queue_size=10)
+        self.pub = rospy.Publisher('/odom', Odometry, queue_size=50)
+        self.pub_joint_state = rospy.Publisher("joint_states", JointState, queue_size = 10)
         self.rate = rospy.Rate(10)
         self.theta = 0
         self.x = 0
@@ -74,13 +76,20 @@ class Simodom():
         msg.twist.twist = Twist(Vector3(self.linear_vel, self.angular_vel,0), 
                                 Vector3(0, 0, self.theta))
         
-        self.pub.publish(msg)
-        #self.rate.sleep()
+        joints = JointState()
+        joints.header.stamp = rospy.Time.now()
+        joints.name = ['wheel1', 'wheel2']
+        joints.position = [0, 0]
+        joints.velocity = [0, 0]
+        joints.effort = [0, 0]
 
+        self.pub.publish(msg)
+        self.pub_joint_state.publish(joints)
 
     def run(self):
         while not rospy.is_shutdown():
             self.publish_odom()
+            self.rate.sleep()
 
 if __name__ == '__main__':
     rospy.init_node("simodom", log_level=rospy.DEBUG)
