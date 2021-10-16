@@ -1,0 +1,4 @@
+parameters:
+  width: 4
+  height: 2 
+  period: 6

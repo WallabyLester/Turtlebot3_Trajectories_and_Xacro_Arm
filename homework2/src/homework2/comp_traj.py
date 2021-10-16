@@ -50,11 +50,11 @@ def comp_traj (W_input, H_input, T_input):
 
     #print(v) # for debugging
     #print(omega) # for debugging
-    return v, omega, x, xdot, xddot, y, ydot, yddot
+    return v, omega, x, xdot, xddot, y, ydot, yddot, theta
 
 class FigureEight():
     def __init__(self, W_input, H_input, T_input):
-        self.v, self.omega, self.x, self.xdot, self.xddot, self.y, self.ydot, self.yddot = comp_traj(W_input, H_input, T_input)
+        self.v, self.omega, self.x, self.xdot, self.xddot, self.y, self.ydot, self.yddot, self.theta = comp_traj(W_input, H_input, T_input)
         self.t = symbols('t')  # remember separate from comp_traj function
     
     def get_velocity(self, t):
@@ -67,6 +67,14 @@ class FigureEight():
         omega = self.omega.subs(self.t, t)
 
         return x, y, v, omega
+
+    def theta0(self, t):
+        """ Function to get theta0
+        
+        """
+        theta = self.theta.subs(self.t, t)
+
+        return theta
 
 '''
 #comp_traj(5, 5, 5) # for debugging
