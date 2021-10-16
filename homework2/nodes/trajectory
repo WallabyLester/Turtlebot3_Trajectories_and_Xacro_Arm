@@ -42,10 +42,11 @@ from tf_conversions import transformations
 from numpy import sin, pi, cos
 
 #values = rospy.get_param("/figure_eight")
-W = 5
-H = 5
-T = 5
+W = 4
+H = 4
+T = 3
 #__pub_freq = rospy.get_param("~pub_freq")
+#__pub_freq = 70
 
 
 class Trajectory:
@@ -55,12 +56,13 @@ class Trajectory:
         self.__pause = rospy.Service("pause", Empty, self.pause) # temporary service type
         self.__resume = rospy.Service("resume", Empty, self.resume)
         self.pub = rospy.Publisher("turtle1/cmd_vel", Twist, queue_size=10)
+        self.stop = rospy.Publisher("turtle1/cmd_vel", Twist, queue_size=10)
         self.__pub_freq = rospy.get_param("~pub_freq")
-        self.rate = self.__pub_freq
+        self.rate = rospy.Rate(self.__pub_freq)
         self.figure_eight = FigureEight(W, H, T)
         self.flag = False  # use for time
         self.__t = rospy.get_time()
-        self.t_paused = 0
+        self.t_paused = rospy.get_time()
         self.t_diff = 0
         #self.theta = 
 
@@ -88,34 +90,39 @@ class Trajectory:
         # self.broadcaster.sendTransform(static_broadcaster)
 
     def pause(self, event=None):
-        self.flag == False
-        if self.flag == False:
-            stop = rospy.Publisher("turtle1/cmd_vel", Twist, queue_size=10)
-            stop.publish(Twist(Vector3(x=0, y=0, z=0), Vector3(x=0, y=0, z=0)))
-            self.t_paused = rospy.get_time()
+        self.flag = False
+        self.stop.publish(Twist(Vector3(x=0, y=0, z=0), Vector3(x=0, y=0, z=0)))
+        self.t_paused = rospy.get_time()
+        #return EmptyResponse()
 
     def resume(self, event=None):
         self.flag = True
         self.t_diff += rospy.get_time() - self.t_paused
         self.pathing()
+        return EmptyResponse()
 
-    def pathing(self, event=None):
-        if self.flag == True:
-            while not rospy.is_shutdown():
-                t = rospy.get_time() - self.__t - self.t_diff
-                #print(t)
-                x, y, v, w = self.figure_eight.get_velocity(t)
-                #print(f"x =  {v}") 
-                movement = Twist(Vector3(x=v, y=0, z=0), Vector3(x=0, y=0, z=w))
-                print(f"v and w = {movement}")
-                self.pub.publish(movement)
+    def pathing(self, event=None):    
+        t = rospy.get_time() - self.__t - self.t_diff
+        #print(t)
+        x, y, v, w = self.figure_eight.get_velocity(t)
+        #print(f"x =  {v}") 
+        movement = Twist(Vector3(x=v, y=0, z=0), Vector3(x=0, y=0, z=w))
+        #print(f"v and w = {movement}")
+        self.pub.publish(movement)
+        self.rate.sleep()
                     
+    def move(self):
+        while not rospy.is_shutdown():
+            if self.flag == True:
+                self.pathing()
+            else:
+                self.rate.sleep()
 
 if __name__=='__main__':
     rospy.init_node("trajectory", log_level=rospy.DEBUG)
     node = Trajectory()
     #rate = rospy.Rate(70) #__pub_freq
-    node.pathing()
+    node.move()
     rospy.spin()
     
     #rospy.Timer(rospy.Duration(1.0/70.0), node.pathing)
