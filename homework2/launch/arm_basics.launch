@@ -1,0 +1,11 @@
+<launch>
+    <rosparam command="load" file="$(find homework2)/config/arm.yaml"/>
+    <param name="robot_description" textfile="$(find homework2)/config/twoarm.urdf.xacro"/>
+
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find homework2)/config/twoarm.rviz"/>
+
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"/>
+
+    <node name="joint_state_publisher_gui" pkg="joint_state_publisher_gui" type="joint_state_publisher_gui" />
+
+</launch>

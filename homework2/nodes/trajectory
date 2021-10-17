@@ -60,8 +60,8 @@ class Trajectory:
         static_broadcaster.header.frame_id = "world"
         static_broadcaster.child_frame_id = "odom"
 
-        static_broadcaster.transform.translation.x = 0
-        static_broadcaster.transform.translation.y = 0
+        static_broadcaster.transform.translation.x = 5
+        static_broadcaster.transform.translation.y = 5
         static_broadcaster.transform.translation.z = 0
 
         static_broadcaster.transform.rotation.x = q1[0]
@@ -87,7 +87,7 @@ class Trajectory:
     def pathing(self, event=None):    
         t = rospy.get_time() - self.__t - self.t_diff
         #print(t)
-        x, y, v, w = self.figure_eight.get_velocity(t)
+        self.x, self.y, v, w = self.figure_eight.get_velocity(t)
         #print(f"x =  {v}") 
         movement = Twist(Vector3(x=v, y=0, z=0), Vector3(x=0, y=0, z=w))
         #print(f"v and w = {movement}")

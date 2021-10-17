@@ -54,9 +54,7 @@
   <depend>turtlesim</depend>
   <build_depend>message_generation</build_depend>
   <test_depend>rosunit</test_depend>
-  <exec_depend>rviz</exec_depend>
-  <exec_depend>joint_state_publisher_gui</exec_depend>
-
+  
 
   <!-- The export tag contains other, unspecified, tags -->
   <export>

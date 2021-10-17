@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://wiki.ros.org/wiki/xacro" name="twoarm">
+
+<xacro:property name="arm" value="$(find homework2/config/arms.yaml" />
+<xacro:property name="dictionary" value="${load_yaml (arm)}" />
+
+<xacro:property name="L1" value="${dictionary['L1']}" />
+<xacro:property name="L2" value="${dictionary['L2']}" />
+<xacro:property name="R1" value="${dictionary['R1']}" />
+<xacro:property name="R2" value="${dictionary['R2']}" />
+
+<link name="base_link" >
+    <visual>
+    <origin xyz="0 0 0" rpy="0 0 0" />
+        <geometry>
+            <cylinder radius="0.1" length="0.1"/>
+        </geometry>
+        <material name="red_mat">
+            <color rgba="1 0 0 0.5" />
+        </material>
+    </visual>
+</link>
+
+<joint name="joint1" type="continuous">
+    <axis xyz="0 0 1" />
+    <origin xyz="0 0 0" rpy="0 0 0" />
+    <parent link="base_link" />
+    <child link="arm1" />
+</joint>
+
+<link name="arm1">
+    <visual>
+    <origin xyz="1 0 0" rpy="0.8 1.6 0.8" />
+        <geometry>
+            <cylinder radius="0.2" length="2.0"/>
+        </geometry>
+        <material name="green_mat">
+            <color rgba="0 1 0 1" />
+        </material>
+    </visual>
+</link>
+
+<joint name ="joint2" type="continuous">
+    <axis xyz="0 0 1" />
+    <origin xyz="2.0 0 0" rpy="0 0 0" />
+    <parent link="arm1" />
+    <child link="arm2" />
+</joint>
+
+
+<link name="arm2">
+    <visual>
+    <origin xyz="2 0 0" rpy="0 1.6 0" />
+        <geometry>
+            <cylinder radius="0.2" length="4"/>
+        </geometry>
+        <material name="blue_mat">
+            <color rgba="0 0 1 1" />
+        </material>
+    </visual>
+</link> 
+</robot>
+
