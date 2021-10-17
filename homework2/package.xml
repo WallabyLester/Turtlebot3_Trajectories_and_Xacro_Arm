@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="2">
   <name>homework2</name>
-  <version>0.0.0</version>
+  <version>0.0.1</version>
   <description>Code to make robot follow figure 8 trajectory</description>
 
   <!-- One maintainer tag required, multiple allowed, one person per tag -->
@@ -54,6 +54,7 @@
   <depend>turtlesim</depend>
   <build_depend>message_generation</build_depend>
   <test_depend>rosunit</test_depend>
+  <exec_depend>xacro</exec_depend>
   
 
   <!-- The export tag contains other, unspecified, tags -->

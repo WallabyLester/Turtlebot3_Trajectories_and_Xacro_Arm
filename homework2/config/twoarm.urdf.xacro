@@ -23,16 +23,16 @@
 
 <joint name="joint1" type="continuous">
     <axis xyz="0 0 1" />
-    <origin xyz="0 0 0" rpy="0 0 0" />
+    <origin xyz="0 0 0.05" rpy="0 0 0" />
     <parent link="base_link" />
     <child link="arm1" />
 </joint>
 
 <link name="arm1">
     <visual>
-    <origin xyz="1 0 0" rpy="0.8 1.6 0.8" />
+    <origin xyz="0.75 0 0" rpy="0.8 1.6 0.8" />
         <geometry>
-            <cylinder radius="0.2" length="2.0"/>
+            <cylinder radius="0.1" length="1.5"/>
         </geometry>
         <material name="green_mat">
             <color rgba="0 1 0 1" />
@@ -42,7 +42,7 @@
 
 <joint name ="joint2" type="continuous">
     <axis xyz="0 0 1" />
-    <origin xyz="2.0 0 0" rpy="0 0 0" />
+    <origin xyz="1.5 0 0" rpy="0 0 0" />
     <parent link="arm1" />
     <child link="arm2" />
 </joint>
@@ -50,9 +50,9 @@
 
 <link name="arm2">
     <visual>
-    <origin xyz="2 0 0" rpy="0 1.6 0" />
+    <origin xyz="0.5 0 0" rpy="0 1.6 0" />
         <geometry>
-            <cylinder radius="0.2" length="4"/>
+            <cylinder radius="0.1" length="1.0"/>
         </geometry>
         <material name="blue_mat">
             <color rgba="0 0 1 1" />
