@@ -1,0 +1,75 @@
+#!/usr/bin/env python
+
+"""
+arm_traj node that causes the end-effector to track a given trajectory
+"""
+
+import rospy
+from sensor_msgs.msg import JointState
+from sympy import atan2, sqrt, cos, pi, acos, simplify
+
+class Arm_traj():
+    def __init__(self):
+        self.L1 = rospy.get_param("L1")
+        self.L2 = rospy.get_param("L2")
+        self.T = rospy.get_param("T")
+        self.pub_joint_state = rospy.Publisher("sensor_msgs/JointState", JointState, queue_size = 10)
+        self.rate = rospy.Rate(20)
+        self.theta1 = 0
+        self.theta2 = 0
+        self.x = 0
+        self.y = 0
+        self.t = 0
+
+    def calculate_traj(self, t):
+        """
+        Calculate the end-effector trajectory (x,y) as a function of time t
+        """
+        h = 2/3 * (self.L1 + self.L2)
+        self.x = 0.9*cos(2*pi*self.t/self.T)*sqrt((self.L1+self.L2)**2 - h**2)
+        self.y = 2/3 * (self.L1 + self.L2)
+
+        return self.x, self.y
+
+    def inverse_kinematics(self):
+        """
+        Inverse kinematics function to get end-effector position (x,y) and returns the joint states.
+        Equations from Lynch, Park, Modern Robotics Chapter 6.
+
+        """
+        beta = acos((self.L1**2 + self.L2**2 - self.x**2 - self.y**2)/(2*self.L1*self.L2))
+        alpha = acos((self.x**2 + self.y**2 + self.L1**2 - self.L2**2)/(2*self.L1*sqrt(self.x**2 + self.y**2)))
+        gamma = atan2(self.y, self.x)
+        self.theta1 = simplify(gamma - alpha)
+        self.theta2 = simplify(pi - beta)
+
+        return self.theta1, self.theta2
+
+    def joint_state(self):
+        """
+        Calculate the joint state using the end-effector calculations and the inverse kinematics equations
+
+        """
+        self.t = rospy.get_time()
+        self.calculate_traj(self.t)
+        self.inverse_kinematics()
+        joints = JointState()
+        joints.header.stamp = rospy.Time.now()
+        #joints.header.frame_id =
+        joints.name = ['joint1', 'joint2']
+        joints.position = [self.theta1, self.theta2]
+        joints.velocity = []
+        joints.effort = []
+
+        return joints
+
+    def run(self):
+        while not rospy.is_shutdown():
+            self.pub_joint_state.publish(self.joint_state())
+            self.rate.sleep()
+
+if __name__ == "__main__":
+    rospy.init_node("arm_traj", log_level = rospy.DEBUG)
+    traj = Arm_traj()
+    traj.run()
+    rospy.spin()

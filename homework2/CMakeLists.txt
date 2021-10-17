@@ -67,10 +67,10 @@ catkin_python_setup()
 # )
 
 ## Generate added messages and services with any dependencies listed here
-generate_messages(
-   DEPENDENCIES
-   turtlesim
- )
+# generate_messages(
+#    DEPENDENCIES
+#    turtlesim
+#  )
 
 ################################################
 ## Declare ROS dynamic reconfigure parameters ##
@@ -101,11 +101,9 @@ generate_messages(
 ## LIBRARIES: libraries you create in this project that dependent projects also need
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
-catkin_package(
-#  INCLUDE_DIRS include
-#  LIBRARIES homework2
-  CATKIN_DEPENDS turtlesim message_runtime
-#  DEPENDS system_lib
+catkin_package(CATKIN_DEPENDS 
+    message_runtime
+    turtlesim 
 )
 
 ###########
@@ -158,11 +156,12 @@ include_directories(
 
 ## Mark executable scripts (Python etc.) for installation
 ## in contrast to setup.py, you can choose the destination
- catkin_install_python(PROGRAMS
+catkin_install_python(PROGRAMS
    nodes/trajectory
    nodes/simodom
+   nodes/arm_traj
    DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
- )
+)
 
 ## Mark executables for installation
 ## See http://docs.ros.org/melodic/api/catkin/html/howto/format1/building_executables.html

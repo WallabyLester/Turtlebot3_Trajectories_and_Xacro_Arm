@@ -25,10 +25,10 @@
     <axis xyz="0 0 1" />
     <origin xyz="0 0 0.05" rpy="0 0 0" />
     <parent link="base_link" />
-    <child link="arm1" />
+    <child link="link1" />
 </joint>
 
-<link name="arm1">
+<link name="link1">
     <visual>
     <origin xyz="0.75 0 0" rpy="0.8 1.6 0.8" />
         <geometry>
@@ -43,12 +43,11 @@
 <joint name ="joint2" type="continuous">
     <axis xyz="0 0 1" />
     <origin xyz="1.5 0 0" rpy="0 0 0" />
-    <parent link="arm1" />
-    <child link="arm2" />
+    <parent link="link1" />
+    <child link="link2" />
 </joint>
 
-
-<link name="arm2">
+<link name="link2">
     <visual>
     <origin xyz="0.5 0 0" rpy="0 1.6 0" />
         <geometry>
@@ -59,5 +58,25 @@
         </material>
     </visual>
 </link> 
+
+<joint name ="joint3" type="fixed">
+    <axis xyz="0 0 1" />
+    <origin xyz="1.0 0 0" rpy="0 0 0" />
+    <parent link="link2" />
+    <child link="link3" />
+</joint>
+
+<link name="link3">
+    <visual>
+    <origin xyz="0.5 0 0" rpy="0 1.6 0" />
+        <geometry>
+            <cylinder radius="0.1" length="0.1"/>
+        </geometry>
+        <material name="transparent_mat">
+            <color rgba="1 1 1 0" />
+        </material>
+    </visual>
+</link> 
+
 </robot>
 
