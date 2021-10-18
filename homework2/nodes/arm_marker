@@ -1,7 +1,14 @@
 #!/usr/bin/env python
 
 """
-arm_marker node that draws markers in rviz at the end effector position
+Draws markers in rviz at the end effector position displaying positive and negative x position
+
+PUBLISHERS:
+    + /shape (Marker) ~ publishes the marker 
+
+PARAMETERS:
+    + /T ~ period for cycle 
+
 """
 
 import rospy
@@ -10,17 +17,27 @@ from visualization_msgs.msg import Marker
 import tf2_ros
 
 class ArmMarker():
-
+    """ Publishes markers according to transforms between robot base_link and end effector
+    """
     def __init__(self):
-        self.T = rospy.get_param("parameters/period")
+        self.T = rospy.get_param("T")
         self.pub_marker = rospy.Publisher("shape", Marker, queue_size=10)
         self.rate = rospy.Rate(10)
         self.buffer = tf2_ros.Buffer()
         self.listener = tf2_ros.TransformListener(self.buffer)
-        self.flag = 0
+        self.flag = 0  # set counter value
 
     def draw_marker(self):
+        """ Function called for drawing the markers 
 
+        Draws markers given position, sphere's for positive x location and cylinder for negative
+
+        Args:
+            T : period in seconds 
+
+        Returns:
+            Publishes marker at given position according to x sign
+        """
         self.marker = Marker()
         self.marker.lifetime = rospy.Duration(self.T/5)
         self.marker.header.frame_id = "link3"
@@ -50,11 +67,20 @@ class ArmMarker():
         self.flag += 1
 
     def run(self):
+        """ Function to run the ros publishing loop 
+
+            Uses a try and except statement to listen to the frame if it has been published
+
+            Args: 
+                Transform between base_link and link3 (end effector)
+                X position of the transform
+
+            Returns:
+                draw_marker() function to draw markers 
+                Given notification if exceptions
+        """
         while not rospy.is_shutdown():
-           # we listen in a try block.  If a frame has not been published
-           # recently enough, then there will be an error and we continue
            try:
-               # get the latest transform between left and right
                trans = self.buffer.lookup_transform("base_link", "link3", rospy.Time())
                self.x = trans.transform.translation.x
                rospy.loginfo("Transform is: " + str(trans))
@@ -75,4 +101,3 @@ if __name__ == "__main__":
     rospy.init_node("arm_marker", log_level = rospy.DEBUG)
     node = ArmMarker()
     node.run()
-    rospy.spin()

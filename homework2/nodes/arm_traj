@@ -12,7 +12,7 @@ class Arm_traj():
     def __init__(self):
         self.L1 = rospy.get_param("L1")
         self.L2 = rospy.get_param("L2")
-        self.T = rospy.get_param("parameters/period")
+        self.T = rospy.get_param("T")
         self.pub_joint_state = rospy.Publisher("joint_states", JointState, queue_size = 10)
         self.rate = rospy.Rate(70)
         self.theta1 = 0
