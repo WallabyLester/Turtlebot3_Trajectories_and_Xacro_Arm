@@ -14,7 +14,7 @@ class Arm_traj():
         self.L2 = rospy.get_param("L2")
         self.T = rospy.get_param("parameters/period")
         self.pub_joint_state = rospy.Publisher("joint_states", JointState, queue_size = 10)
-        self.rate = rospy.Rate(60)
+        self.rate = rospy.Rate(20)
         self.theta1 = 0
         self.theta2 = 0
         self.x = 0
@@ -62,13 +62,13 @@ class Arm_traj():
         joints.velocity = [0,0]
         joints.effort = [0,0]
 
-        self.pub_joint_state.publish(joints)
-        # return joints
+        #self.pub_joint_state.publish(joints)
+        return joints
 
     def run(self):
         while not rospy.is_shutdown():
-            # self.pub_joint_state.publish(self.joint_state())
-            self.joint_state()
+            self.pub_joint_state.publish(self.joint_state())
+            #self.joint_state()
             self.rate.sleep()
 
 if __name__ == "__main__":

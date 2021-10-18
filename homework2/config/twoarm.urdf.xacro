@@ -43,6 +43,11 @@
            <inertia ixx="1/12*${m}*(3*${R1}**2 + ${L1}**2)" ixy="0.0" ixz="0.0" iyy="1/12*${m}*(3*${R1}**2 + ${L1}**2)" iyz="0.0" izz="1/2*${m}*${R1}**2"/>
          </inertial>
     </visual>
+    <collision>
+           <geometry>
+             <cylinder length="${L1}" radius="${R1}"/>
+           </geometry>
+    </collision>
 </link>
 
 <joint name ="joint2" type="continuous">
@@ -66,6 +71,11 @@
            <inertia ixx="1/12*${m}*(3*${R2}**2 + ${L2}**2)" ixy="0.0" ixz="0.0" iyy="1/12*${m}*(3*${R2}**2 + ${L2}**2)" iyz="0.0" izz="1/2*${m}*${R2}**2"/>
          </inertial>
     </visual>
+    <collision>
+           <geometry>
+             <cylinder length="${L2}" radius="${R2}"/>
+           </geometry>
+    </collision>
 </link> 
 
 <joint name ="joint3" type="fixed">

@@ -92,7 +92,7 @@ class Trajectory:
         movement = Twist(Vector3(x=v, y=0, z=0), Vector3(x=0, y=0, z=w))
         #print(f"v and w = {movement}")
         self.pub.publish(movement)
-        #self.rate.sleep()
+        self.rate.sleep()
     
     def move(self):
         while not rospy.is_shutdown():
@@ -100,7 +100,7 @@ class Trajectory:
                 self.pathing()
             else:
                 self.pub.publish(Twist(Vector3(x=0,y=0,z=0), Vector3(x=0,y=0,z=0)))
-            self.rate.sleep()
+                self.rate.sleep()
 
 if __name__=='__main__':
     rospy.init_node("trajectory", log_level=rospy.DEBUG)
