@@ -1,7 +1,16 @@
 #!/usr/bin/env python
 
 """
-arm_traj node that causes the end-effector to track a given trajectory
+Publishes joint states to make the end-effector track a given trajectory
+
+PUBLISHERS:
+    + /joint_states (sensor_msgs/JointState) ~ the joint positions, velocity, and effort
+
+PARAMETERS: 
+    + /L1 ~ length of the first link
+    + /L2 ~ length of the second link
+    + /T ~ period for cycle 
+
 """
 
 import rospy
@@ -9,6 +18,8 @@ from sensor_msgs.msg import JointState
 from sympy import atan2, sqrt, cos, pi, acos, simplify
 
 class Arm_traj():
+    """ Publishes joint states that allow arm to follow a given trajectory
+    """
     def __init__(self):
         self.L1 = rospy.get_param("L1")
         self.L2 = rospy.get_param("L2")
@@ -22,8 +33,15 @@ class Arm_traj():
         self.t = 0
 
     def calculate_traj(self, t):
-        """
+        """ Function to calculate trajectory
+
         Calculate the end-effector trajectory (x,y) as a function of time t
+
+        Args: 
+            t (time) : ros current time 
+
+        Returns: 
+            self.x and self.y, x and y of trajectory given time 
         """
         h = 2/3 * (self.L1 + self.L2)
         self.x = 0.9*cos(2*pi*self.t/self.T)*sqrt((self.L1+self.L2)**2 - h**2)
@@ -32,10 +50,18 @@ class Arm_traj():
         return self.x, self.y
 
     def inverse_kinematics(self):
-        """
-        Inverse kinematics function to get end-effector position (x,y) and returns the joint states.
+        """ Inverse kinematics function to get end-effector position (x,y) and return the joint states.
+        
         Equations from Lynch, Park, Modern Robotics Chapter 6.
 
+        Args: 
+            self.L1 : length of the first link
+            self.L2 : length of the second link
+            self.x : x position of trajectory 
+            self.y : y position of trajectory
+
+        Returns:
+            self.theta1 and self.theta2, theta1 and theta2 of desired arm motion 
         """
         beta = acos((self.L1**2 + self.L2**2 - self.x**2 - self.y**2)/(2*self.L1*self.L2))
         alpha = acos((self.x**2 + self.y**2 + self.L1**2 - self.L2**2)/(2*self.L1*sqrt(self.x**2 + self.y**2)))
@@ -46,9 +72,16 @@ class Arm_traj():
         return self.theta1, self.theta2
 
     def joint_state(self):
-        """
+        """ Function to call the trajectory calculations and inverse kinematics 
+        
         Calculate the joint state using the end-effector calculations and the inverse kinematics equations
 
+        Args: 
+            self.theta1 : theta1 of desired arm motion 
+            self.theta2 : theta2 of desired arm motion
+
+        Returns: 
+            joints, the joint state values 
         """
         self.t = rospy.get_time()
         self.calculate_traj(self.t)
@@ -56,19 +89,23 @@ class Arm_traj():
 
         joints = JointState()
         joints.header.stamp = rospy.Time.now()
-        #joints.header.frame_id =
+        #joints.header.frame_id unneeded.
         joints.name = ['joint1', 'joint2']
         joints.position = [self.theta1, self.theta2]
-        # joints.position = [3, 4]
         joints.velocity = [0,0]
         joints.effort = [0,0]
 
         self.pub_joint_state.publish(joints)
-        #return joints
 
     def run(self):
+        """ Function to run the ros publishing loop 
+        
+        Runs rospy loop
+
+        Returns: 
+            joint_state, function call 
+        """
         while not rospy.is_shutdown():
-            #self.pub_joint_state.publish(self.joint_state())
             self.joint_state()
             self.rate.sleep()
 
@@ -76,4 +113,3 @@ if __name__ == "__main__":
     rospy.init_node("arm_traj", log_level = rospy.DEBUG)
     traj = Arm_traj()
     traj.run()
-    #rospy.spin()
