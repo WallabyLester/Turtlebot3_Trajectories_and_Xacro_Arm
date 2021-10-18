@@ -14,7 +14,7 @@ class ArmMarker():
     def __init__(self):
         self.T = rospy.get_param("parameters/period")
         self.pub_marker = rospy.Publisher("shape", Marker, queue_size=10)
-        self.rate = rospy.Rate(2)
+        self.rate = rospy.Rate(10)
         self.buffer = tf2_ros.Buffer()
         self.listener = tf2_ros.TransformListener(self.buffer)
         self.flag = 0

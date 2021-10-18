@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://wiki.ros.org/wiki/xacro" name="twoarm">
 
-<xacro:property name="arm" value="$(find homework2/config/arms.yaml" />
-<xacro:property name="dictionary" value="${load_yaml (arm)}" />
+<xacro:property name="arm" value="$(find homework2)/config/arm.yaml" />
+<xacro:property name="dictionary" value="${load_yaml(arm)}" />
 
 <xacro:property name="L1" value="${dictionary['L1']}" />
 <xacro:property name="L2" value="${dictionary['L2']}" />
@@ -30,9 +30,9 @@
 
 <link name="link1">
     <visual>
-    <origin xyz="0.75 0 0" rpy="0.8 1.6 0.8" />
+    <origin xyz="${L1/2} 0 0" rpy="${pi/4} ${pi/2} ${pi/4}" />
         <geometry>
-            <cylinder radius="0.1" length="1.5"/>
+            <cylinder radius="${R1}" length="${L1}"/>
         </geometry>
         <material name="green_mat">
             <color rgba="0 1 0 1" />
@@ -42,16 +42,16 @@
 
 <joint name ="joint2" type="continuous">
     <axis xyz="0 0 1" />
-    <origin xyz="1.5 0 0" rpy="0 0 0" />
+    <origin xyz="${L1} 0 0" rpy="0 0 0" />
     <parent link="link1" />
     <child link="link2" />
 </joint>
 
 <link name="link2">
     <visual>
-    <origin xyz="0.5 0 0" rpy="0 1.6 0" />
+    <origin xyz="${L2/2} 0 0" rpy="0 ${pi/2} 0" />
         <geometry>
-            <cylinder radius="0.1" length="1.0"/>
+            <cylinder radius="${R2}" length="${L2}"/>
         </geometry>
         <material name="blue_mat">
             <color rgba="0 0 1 1" />
@@ -61,16 +61,16 @@
 
 <joint name ="joint3" type="fixed">
     <axis xyz="0 0 1" />
-    <origin xyz="1.0 0 0" rpy="0 0 0" />
+    <origin xyz="${L2} 0 0" rpy="0 0 0" />
     <parent link="link2" />
     <child link="link3" />
 </joint>
 
 <link name="link3">
     <visual>
-    <origin xyz="0.5 0 0" rpy="0 1.6 0" />
+    <origin xyz="${L2/2} 0 0" rpy="0 ${pi/2} 0" />
         <geometry>
-            <cylinder radius="0.1" length="0.1"/>
+            <cylinder radius="${R2}" length="0.1"/>
         </geometry>
         <material name="transparent_mat">
             <color rgba="1 1 1 0" />

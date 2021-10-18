@@ -131,6 +131,14 @@ Visualization Manager:
       Unreliable: false
       Value: true
       Width: 0.019999999552965164
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /shape
+      Name: Marker
+      Namespaces:
+        "": true
+      Queue Size: 100
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
