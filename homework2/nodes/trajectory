@@ -1,41 +1,38 @@
 #!/usr/bin/env python
 
 '''
-Publishes a cmd_vel (geometry_msgs/Twist) message at a fixed frequency, causing the turtlebot to follow the desired open-loop trajectory
-It is up to you to find an appropriate frequency, but 10 Hz is too slow and 1 kHz is faster than needed.
+Publishes a message at a fixed frequency, causing the turtlebot or turtlesim to follow a figure eight trajectory
 
-Broadcasts:
-A static transform from world to odom.
-The world frame and odom frame are co-located. When the turtlebot is at (0, 0, 0) in the odom frame it is at 0,0,θ0 in the world frame, where θ0 is the initial angle of the robot on its figure-eight trajectory
-Thus, when the turtlebot starts, it can initiate its odometry to (0,0,0) but always be facing the correct direction in the odometry frame
+PUBLISHERS:
+    + /turtle1/cmd_vel (geometry_msgs/Twist) ~ the movement instructions for the turtle
+    + /cmd_vel (geometry_msgs/Twist) ~ the movement instructions for the turtlebot3
+    + /static_broadcaster (broadcaster) ~ broadcasts a static transform from the world to odom
 
-Services:
-pause (type up to you) Stop the turtle's motion, in a way that the trajectory can be resumed
-resume (type up to you) Resume the turtle's motion along the trajectory
+SERVICES:
+    + /pause (Empty) ~ stops the turtle's motion while allowing the trajectory to be resumed 
+    + /resume (Empty) ~ resumes the turtle's motion along the trajectory
 
-Parameters:
-width: The width of the figure eight
-height: The height of the figure eight
-period: The amount of time it takes to complete the figure eight
-~pub_freq: The frequency at which to publish the messages. This is a private parameter.
-Pick parameters that fit your location and the turtlebot's capabilities.
+PARAMETERS: 
+    + /~real ~ private parameter for identifying a turtlebot3 or turtlesim launch
+    +/~pub_freq ~ private parameter for publishing frequency 
+    +/parameters/width ~ the width of the figure eight 
+    +/parameters/height ~ the height of the figure eight 
+    +/parameters/period ~ the amount of time for the robot/turtle to complete the figure eight
+
 '''
 
 import rospy
 from std_srvs.srv import Empty, EmptyResponse
 from geometry_msgs.msg import Twist, Vector3, TransformStamped
-import math
 from homework2.comp_traj import FigureEight
 import tf2_ros
 from tf_conversions import transformations
-from numpy import sin, pi, cos
-
 
 class Trajectory:
-    """ Calculates based on Figure Eight trajectories and provides coordinates 
+    """ Moves turtle/robot based on Figure Eight trajectories
     """
     def __init__(self):
-        self.__pause = rospy.Service("pause", Empty, self.pause) # temporary service type
+        self.__pause = rospy.Service("pause", Empty, self.pause) 
         self.__resume = rospy.Service("resume", Empty, self.resume)
         self.__real = rospy.get_param("~real")
         self.__pub_freq = rospy.get_param("~pub_freq")
@@ -50,12 +47,13 @@ class Trajectory:
             self.stop = rospy.Publisher("/cmd_vel", Twist, queue_size=10)
         self.rate = rospy.Rate(self.__pub_freq)
         self.figure_eight = FigureEight(self.W, self.H, self.T)
-        self.flag = False  # use for time
+        self.flag = False  # use for time and pause/resume
         self.__t = rospy.get_time()
         self.t_paused = rospy.get_time()
         self.t_diff = 0
         self.theta = self.figure_eight.theta0(self.__t)
 
+        # static broadcaster 
         self.static_broadcaster = tf2_ros.StaticTransformBroadcaster()
 
         q1 = transformations.quaternion_from_euler(0, 0 , self.theta)
@@ -77,19 +75,50 @@ class Trajectory:
         self.static_broadcaster.sendTransform(static_broadcaster)
 
     def pause(self, event=None):
+        """ Pause function for the pause service 
+
+        Stops the turtle/robot movement without affecting its trajectory 
+
+        Args: 
+            event (None) : default empty argument to allow service to be called 
+
+        Returns:
+            EmptyResponse, empty response when calling the service 
+        
+        """
         self.flag = False
-        #self.stop.publish(Twist(Vector3(x=0, y=0, z=0), Vector3(x=0, y=0, z=0)))
-        #self.rate.sleep
         self.t_paused = rospy.get_time()
         return EmptyResponse()
 
     def resume(self, event=None):
+        """ Resume function for the resume service 
+
+        Resumes the turtle/robot movement along the same initial trajectory 
+
+        Args: 
+            event (None) : default empty argument to allow service to be called 
+
+        Returns:
+            EmptyResponse, empty response when calling the service 
+        
+        """
         self.flag = True
         self.t_diff += rospy.get_time() - self.t_paused
-        #self.pathing()
         return EmptyResponse()
 
-    def pathing(self, event=None):    
+    def pathing(self, event=None):
+        """ Function to publish the turtle/robot movement 
+
+        Takes the time difference and publishes the linear and angular velocity 
+
+        Args:
+            event (None) : default empty argument to allow service to be called 
+            v : linear velocity 
+            w : angular velocity 
+
+        Returns: 
+            Movement, Twist data 
+        """    
         t = rospy.get_time() - self.__t - self.t_diff
         #print(t)
         self.x, self.y, v, w = self.figure_eight.get_velocity(t)
@@ -100,6 +129,17 @@ class Trajectory:
         self.rate.sleep()
     
     def move(self):
+        """ Function to run the ros publishing loop 
+        
+        Runs rospy loop and sets options for paused or resumed movement 
+
+        Args: 
+            self.flag : flag value to determine paused (False) or resumed (True)
+
+        Returns: 
+            Pathing, function call for movement 
+            Publishes zero velocities 
+        """
         while not rospy.is_shutdown():
             if self.flag == True:
                 self.pathing()
@@ -110,9 +150,6 @@ class Trajectory:
 if __name__=='__main__':
     rospy.init_node("trajectory", log_level=rospy.DEBUG)
     node = Trajectory()
-    #rate = rospy.Rate(70) #__pub_freq
     node.move()
     rospy.spin()
     
-    #rospy.Timer(rospy.Duration(1.0/70.0), node.pathing)
-    #rospy.spin()

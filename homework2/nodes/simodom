@@ -1,11 +1,15 @@
 #!/usr/bin/env python
 """
-Subscribes to a turtlesim/Pose message
-Publishes the corresponding nav_msgs/Odometry message
-The header frame is odom
-The child frame is base_footprint
-You can leave covariance information as zeros
-Broadcasts the corresponding transform between odom and base_link
+Publishes a corresponding Odometry and broadcasts transforms
+
+PUBLISHERS: 
+    + /odom (Odometry) ~ position and velocity in free space 
+    + /sensor_msgs.JointState (sensor_msgs/JointState) ~ the joint positions, velocity, and effort
+    + /odom (broadcaster) ~ broadcasts turtle's transform 
+
+SUBSCRIBERS:
+    + /turtle1/pose (turtlesim/Pose) ~ turtle's current position 
+
 """
 
 import rospy
@@ -17,6 +21,8 @@ from geometry_msgs.msg import TransformStamped, Twist, Vector3
 from sensor_msgs.msg import JointState
 
 class Simodom():
+    """ Publishes odometry and broadcasts transforms 
+    """
     def __init__(self):
         rospy.Subscriber("turtle1/pose", Pose, self.broadcast_odom)
         self.pub = rospy.Publisher('/odom', Odometry, queue_size=50)
@@ -29,6 +35,17 @@ class Simodom():
         self.angular_vel = 0
 
     def broadcast_odom(self, data):
+        """ Function for broadcasting the turtle pose 
+
+        Gets the turtle's current position
+
+        Args: 
+            data (Pose) : gets turtle's x, y, and theta coordinates 
+
+        Returns: 
+            Odom transform, translation and rotation of transform 
+        """
+
         self.x = data.x
         self.y = data.y
         self.theta = data.theta
@@ -55,7 +72,19 @@ class Simodom():
         self.broadcaster.sendTransform(odom)
 
     def publish_odom(self):
-        # publish odometry 
+        """ Function to publish odometry data 
+
+        Reads turtle position data and publishes odometry and joint states 
+
+        Args: 
+            self.x (Pose) : turtle's x coordinate 
+            self.y (Pose) : turtle's y coordinate 
+            self.theta (Pose) : turtle's theta coordinate 
+
+        Returns: 
+            msg and joints, odometry and joint states 
+        
+        """ 
         msg = Odometry()
 
         msg.header.stamp = rospy.Time.now()
@@ -88,6 +117,13 @@ class Simodom():
         self.pub_joint_state.publish(joints)
 
     def run(self):
+        """ Function to run the ros publishing loop 
+        
+        Runs rospy loop
+
+        Returns: 
+            publish_odom, function call 
+        """
         while not rospy.is_shutdown():
             self.publish_odom()
             self.rate.sleep()
