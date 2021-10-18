@@ -8,6 +8,7 @@
 <xacro:property name="L2" value="${dictionary['L2']}" />
 <xacro:property name="R1" value="${dictionary['R1']}" />
 <xacro:property name="R2" value="${dictionary['R2']}" />
+<xacro:property name="m" value="1" />
 
 <link name="base_link" >
     <visual>
@@ -37,6 +38,10 @@
         <material name="green_mat">
             <color rgba="0 1 0 1" />
         </material>
+        <inertial>
+           <mass value="${m}"/>
+           <inertia ixx="1/12*${m}*(3*${R1}**2 + ${L1}**2)" ixy="0.0" ixz="0.0" iyy="1/12*${m}*(3*${R1}**2 + ${L1}**2)" iyz="0.0" izz="1/2*${m}*${R1}**2"/>
+         </inertial>
     </visual>
 </link>
 
@@ -56,6 +61,10 @@
         <material name="blue_mat">
             <color rgba="0 0 1 1" />
         </material>
+        <inertial>
+           <mass value="${m}"/>
+           <inertia ixx="1/12*${m}*(3*${R2}**2 + ${L2}**2)" ixy="0.0" ixz="0.0" iyy="1/12*${m}*(3*${R2}**2 + ${L2}**2)" iyz="0.0" izz="1/2*${m}*${R2}**2"/>
+         </inertial>
     </visual>
 </link> 
 
