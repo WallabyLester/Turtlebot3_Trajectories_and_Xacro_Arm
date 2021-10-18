@@ -1,6 +1,6 @@
 """
-Compute the trajectory and its derivatives at a given time and 
-Compute the proper control inputs at a given time
+Computes the trajectory and its derivatives at a given time and gives the proper control inputs
+
 """
 
 import sympy
@@ -8,7 +8,19 @@ from sympy import Function, atan2, symbols, sqrt, sin, pi
 from sympy.abc import W, H, T, t
 
 def comp_traj (W_input, H_input, T_input):
+    """ Function to compute the trajectory 
 
+    Calculates the trajectory for a given shape 
+
+    Args:
+        W_input : width of the figure eight 
+        H_input : height of the figure eight 
+        T_input : period of the figure eight 
+
+    Returns: 
+        v, omega, x, xdot, xddot, y, ydot, yddot, theta 
+        Symbolic values for the trajectory, velocites and derivatives
+    """
     # define as functions of time
     v = Function('v')(t)
     x = Function('x')(t)
@@ -20,17 +32,15 @@ def comp_traj (W_input, H_input, T_input):
     y = (H/2) * sin((4*pi*t)/T)
 
     xdot = x.diff(t)
-    #print(f"xdot = {xdot}")
     ydot = y.diff(t)
     xddot = xdot.diff(t)
     yddot = ydot.diff(t)
 
-    # xdot = vcos(theta), ydot = vsin(theta)
+    # given that xdot = vcos(theta), ydot = vsin(theta)
     v = sqrt(xdot**2 + ydot**2)
     theta = atan2(ydot, xdot)
     thetadot = theta.diff(t)
     omega = thetadot
-    #print(f"omega = {omega}")
 
     list = [v, omega, x, xdot, xddot, y, ydot, yddot, theta]
     values = []
@@ -48,11 +58,11 @@ def comp_traj (W_input, H_input, T_input):
     yddot = values[7]
     theta = values[8]
 
-    #print(v) # for debugging
-    #print(omega) # for debugging
     return v, omega, x, xdot, xddot, y, ydot, yddot, theta
 
 class FigureEight():
+    """ Computes the linear and angular velocity at a given time
+    """
     def __init__(self, W_input, H_input, T_input):
         self.v, self.omega, self.x, self.xdot, self.xddot, self.y, self.ydot, self.yddot, self.theta = comp_traj(W_input, H_input, T_input)
         self.t = symbols('t')  # remember separate from comp_traj function
@@ -60,6 +70,14 @@ class FigureEight():
     def get_velocity(self, t):
         """ Function to return the linear and angular velocities 
 
+        Calculates the numeric solution to the symbolic solutions from comp_traj
+
+        Args:
+            t (time) : given time from ros functions 
+
+        Returns: 
+            x, y, v, omega
+            Values for the x and y position and linear and angular velocities 
         """
         x = self.x.subs(self.t, t)
         y = self.y.subs(self.t, t)
@@ -69,16 +87,31 @@ class FigureEight():
         return x, y, v, omega
 
     def theta0(self, t):
-        """ Function to get theta0
-        
+        """ Function to return theta value 
+
+        Calculates the theta value at time 0 
+
+        Args: 
+            t (time) : given time (0 in this instance)
+
+        Returns: 
+            theta, angle for initial position of the turtle/robot
         """
         theta = self.theta.subs(self.t, t)
 
         return theta
 
     def test(self, t):
-        """
-        Function for testing the python package calculations
+        """ Function for testing the python package calculations
+
+        Calculates all positional values 
+
+        Args:
+            t (time) : given time from test function 
+
+        Returns: 
+            x, y, xdot, ydot, xddot, yddot, v, omega
+            Values for use in testing 
         """
         x = self.x.subs(self.t, t)
         y = self.y.subs(self.t, t)
@@ -91,7 +124,7 @@ class FigureEight():
 
         return x, y, xdot, ydot, xddot, yddot, v, omega
 
-# for debugging
+# for testing calculations 
 '''
 figure_eight = FigureEight(5,5,5)
 #for t in range(10):
