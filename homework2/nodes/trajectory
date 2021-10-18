@@ -37,12 +37,17 @@ class Trajectory:
     def __init__(self):
         self.__pause = rospy.Service("pause", Empty, self.pause) # temporary service type
         self.__resume = rospy.Service("resume", Empty, self.resume)
-        self.pub = rospy.Publisher("turtle1/cmd_vel", Twist, queue_size=10)
-        self.stop = rospy.Publisher("turtle1/cmd_vel", Twist, queue_size=10)
+        self.__real = rospy.get_param("~real")
         self.__pub_freq = rospy.get_param("~pub_freq")
         self.W = rospy.get_param("parameters/width")
         self.H = rospy.get_param("parameters/height")
         self.T = rospy.get_param("parameters/period")
+        if self.__real == 0: 
+            self.pub = rospy.Publisher("turtle1/cmd_vel", Twist, queue_size=10)
+            self.stop = rospy.Publisher("turtle1/cmd_vel", Twist, queue_size=10)
+        elif self.__real == 1:
+            self.pub = rospy.Publisher("/cmd_vel", Twist, queue_size=10)
+            self.stop = rospy.Publisher("/cmd_vel", Twist, queue_size=10)
         self.rate = rospy.Rate(self.__pub_freq)
         self.figure_eight = FigureEight(self.W, self.H, self.T)
         self.flag = False  # use for time

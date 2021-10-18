@@ -2,3 +2,7 @@ parameters:
   width: 4
   height: 2 
   period: 6
+# parameters for turtlebot3
+  # width: 0.5
+  # height: 0.5
+  # period: 40

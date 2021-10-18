@@ -3,21 +3,23 @@
     
     <rosparam file="$(find homework2)/config/trajectory.yaml"/>
 
-    <node name="trajectory" pkg="homework2" type="trajectory">
-        <param name="pub_freq" type="double" value="70.0"/>
-    </node>
-
-    <node name="simodom" pkg="homework2" type="simodom"/>
-
     <group if="$(eval arg ('mode') == 'sim')">
+        <node name="trajectory" pkg="homework2" type="trajectory">
+            <param name="pub_freq" type="double" value="70.0"/>
+            <param name="real" value="0" />
+        </node>
         <node name="andru" pkg="turtlesim" type="turtlesim_node"/>
         <node name="rviz" pkg="rviz" type="rviz" args="-d $(find homework2)/config/turtle_view.rviz" />
         <param name="robot_description" command="$(find xacro)/xacro $(find turtlebot3_description)/urdf/turtlebot3_burger.urdf.xacro"/>
         <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"/>
         <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher"/>
+        <node name="simodom" pkg="homework2" type="simodom"/>
     </group>
 
     <group if="$(eval arg ('mode') == 'real')"> 
-        
+        <node name="trajectory" pkg="homework2" type="trajectory">
+            <param name="pub_freq" type="double" value="70.0"/>
+            <param name="real" value="1" />
+        </node>
     </group>
 </launch>
