@@ -35,3 +35,5 @@ Refer to python package `homework2/src/homework2` for symbolic calculations of t
 ![turtlebot3_figure_eight](turtlebot3_figure_eight.gif "turtlebot3_figure_eight.gif")
 
 ## Turtlebot3 Robot Following Figure Eight 
+
+https://user-images.githubusercontent.com/90433630/137831334-9dec3fb7-2b72-49d3-af12-d19333610e8b.mp4
