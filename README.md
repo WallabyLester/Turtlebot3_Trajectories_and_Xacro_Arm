@@ -47,3 +47,8 @@ Turlebot3 model follows the trajectory in RVIZ with the pause and resume service
 Turtlebot3 robot follows the trajectory using the pause and resume services.
 
 https://user-images.githubusercontent.com/90433630/137831334-9dec3fb7-2b72-49d3-af12-d19333610e8b.mp4
+
+## Xacro Arm with Markers
+Xacro arm following the trajectory with markers for x position 
+
+![xacro_arm](xacro_arm.gif "xacro_arm.gif")
