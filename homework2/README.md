@@ -13,14 +13,14 @@ To launch the packages use the roslaunch command `roslaunch homework2 <launch_fi
 
 The launch files are listed below:
 
-`figure_eight.launch` - Launch file for running the robot following a figure eight trajectory. Add argument `mode:=sim` for simulating with turtlesim and `mode:=real` for use on the turtlebot3.
+`figure_eight.launch` - Launch file for running the robot following a figure eight trajectory. Use no arguments or add argument `mode:=sim` for simulating with turtlesim and add argument `mode:=real` for use on the turtlebot3.
 
 `arm_basics.launch` - Launch with no arguments or add `use_jsp:=False` for launching xacro arm to follow a trajectory. Add argument `use_jsp:=True` for launching with the joint state publisher gui to control the arm with the gui.
 
 `arm_mark.launch` - Launch with no arguments or add `use_jsp:=False` for launching xacro arm to follow a trajectory with markers being placed. The marker shapes and colors correspond with positive or negative x position. Positive is a green sphere and negative is a blue cylinder. Add argument `use_jsp:=True` for launching with the joint state publisher gui to control the arm with the gui and still display the markers.
 
 ## Configuration Instructions
-To adjust the trajectory parameters for the figure eight the turtle and robot will follow, use the `trajectory.yaml` file. The file takes parameters for width, height, and period of the figure eight. Use the below suggested parameters for the turtlebot3. 
+To adjust the trajectory parameters for the figure eight the turtle and robot will follow, use the `trajectory.yaml` file. The file takes parameters for width, height, and period of the figure eight. Use the commented suggested parameters for the turtlebot3. 
 
 To adjust the parameters for the xacro arm, use the `arm.yaml` file. The file takes a length and radius for each link/arm and a period, T. 
 
