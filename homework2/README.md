@@ -32,6 +32,6 @@ Refer to python package `homework2/src/homework2` for symbolic calculations of t
 
 ## Turtlebot3 Robot Model Following Figure Eight 
 
-![turtlebot_figure_eight](turtlebot_figure_eight.gif "turtlebot_figure_eight.gif")
+![turtlebot3_figure_eight](turtlebot3_figure_eight.gif "turtlebot3_figure_eight.gif")
 
 ## Turtlebot3 Robot Following Figure Eight 
