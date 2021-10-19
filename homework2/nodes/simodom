@@ -5,10 +5,12 @@ Publishes a corresponding Odometry and broadcasts transforms
 PUBLISHERS: 
     + /odom (Odometry) ~ position and velocity in free space 
     + /sensor_msgs.JointState (sensor_msgs/JointState) ~ the joint positions, velocity, and effort
-    + /odom (broadcaster) ~ broadcasts turtle's transform 
 
 SUBSCRIBERS:
     + /turtle1/pose (turtlesim/Pose) ~ turtle's current position 
+
+BROADCASTERS:
+    + /odom (goemetry_msgs/TransformStamped) ~ broadcasts turtle's transform 
 
 """
 

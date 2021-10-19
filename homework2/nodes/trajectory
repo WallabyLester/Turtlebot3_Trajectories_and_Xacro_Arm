@@ -6,7 +6,6 @@ Publishes a message at a fixed frequency, causing the turtlebot or turtlesim to 
 PUBLISHERS:
     + /turtle1/cmd_vel (geometry_msgs/Twist) ~ the movement instructions for the turtle
     + /cmd_vel (geometry_msgs/Twist) ~ the movement instructions for the turtlebot3
-    + /static_broadcaster (broadcaster) ~ broadcasts a static transform from the world to odom
 
 SERVICES:
     + /pause (Empty) ~ stops the turtle's motion while allowing the trajectory to be resumed 
@@ -18,6 +17,9 @@ PARAMETERS:
     +/parameters/width ~ the width of the figure eight 
     +/parameters/height ~ the height of the figure eight 
     +/parameters/period ~ the amount of time for the robot/turtle to complete the figure eight
+
+BROADCASTERS:
+     + /static_broadcaster (geometry_msgs/TransformStamped) ~ broadcasts a static transform from the world to odom
 
 '''
 
