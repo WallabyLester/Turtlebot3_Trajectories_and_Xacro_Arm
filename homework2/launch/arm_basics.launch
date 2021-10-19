@@ -8,11 +8,9 @@
 
     <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"/>
 
-    <node name="arm_traj" pkg="homework2" type="arm_traj" />
+    <node name="arm_traj" pkg="homework2" type="arm_traj" unless="$(arg use_jsp)"/>
     
-    <group if="$(arg use_jsp)">
-        <node name="joint_state_publisher_gui" pkg="joint_state_publisher_gui" type="joint_state_publisher_gui" />
-    </group>
+    <node name="joint_state_publisher_gui" pkg="joint_state_publisher_gui" type="joint_state_publisher_gui" if="$(arg use_jsp)"/>
 
 </launch>
 

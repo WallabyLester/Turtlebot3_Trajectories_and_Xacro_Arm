@@ -15,7 +15,7 @@ PARAMETERS:
 
 import rospy
 from sensor_msgs.msg import JointState
-from sympy import atan2, sqrt, cos, pi, acos, simplify
+from sympy import atan2, sqrt, cos, pi, acos
 
 class Arm_traj():
     """ Publishes joint states that allow arm to follow a given trajectory
