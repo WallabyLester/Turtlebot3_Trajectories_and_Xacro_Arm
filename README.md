@@ -36,12 +36,12 @@ This package features a test option to test the values of the figure eight traje
 ## Turtlesim Following Figure Eight
 Turtle follows the trajectory starting from a paused state, resuming, and being paused and resumed again. 
 
-![turtle_figure_eight](turtle_figure_eight.gif "turtle_figure_eight.gif")
+![turtle_figure_eight](gifs/turtle_figure_eight.gif "turtle_figure_eight.gif")
 
 ## Turtlebot3 Robot Model Following Figure Eight 
 Turlebot3 model follows the trajectory in RVIZ with the pause and resume services used again. 
 
-![turtlebot3_figure_eight](turtlebot3_figure_eight.gif "turtlebot3_figure_eight.gif")
+![turtlebot3_figure_eight](gifs/turtlebot3_figure_eight.gif "turtlebot3_figure_eight.gif")
 
 ## Turtlebot3 Robot Following Figure Eight 
 Turtlebot3 robot follows the trajectory using the pause and resume services.
@@ -51,4 +51,4 @@ https://user-images.githubusercontent.com/90433630/137831334-9dec3fb7-2b72-49d3-
 ## Xacro Arm with Markers
 Xacro arm following the trajectory with markers for x position 
 
-![xacro_arm](xacro_arm.gif "xacro_arm.gif")
+![xacro_arm](gifs/xacro_arm.gif "xacro_arm.gif")
